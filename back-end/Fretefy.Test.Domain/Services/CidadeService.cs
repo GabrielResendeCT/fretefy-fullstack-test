@@ -17,7 +17,7 @@ namespace Fretefy.Test.Domain.Services
             _cidadeRepository = cidadeRepository;
         }
 
-        public Cidade Get(Guid id)
+        public Cidade GetByIdAsync(Guid id)
         {
             return _cidadeRepository.List().FirstOrDefault(f => f.Id == id);
         }

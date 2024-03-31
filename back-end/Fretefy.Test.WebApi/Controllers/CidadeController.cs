@@ -1,42 +1,46 @@
-﻿using Fretefy.Test.Domain.Entities;
-using Fretefy.Test.Domain.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Fretefy.Test.WebApi.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using Fretefy.Test.WebApi.AppServices.Interfaces;
 
 namespace Fretefy.Test.WebApi.Controllers
 {
-    [Route("api/cidade")]
     [ApiController]
+    [Route("api/cidades")] // Ajuste realizado, plural pode ser uma boa prática REST
     public class CidadeController : ControllerBase
     {
-        private readonly ICidadeService _cidadeService;
+        private readonly ICidadeAppService _cidadeAppService;
 
-        public CidadeController(ICidadeService cidadeService)
+        public CidadeController(ICidadeAppService cidadeAppService)
         {
-            _cidadeService = cidadeService;
+            _cidadeAppService = cidadeAppService;
         }
 
         [HttpGet]
         public IActionResult List([FromQuery] string uf, [FromQuery] string terms)
         {
-            IEnumerable<Cidade> cidades;
+            IEnumerable<CidadeDTO> cidadesDto;
 
             if (!string.IsNullOrEmpty(terms))
-                cidades = _cidadeService.Query(terms);
+                cidadesDto = _cidadeAppService.Query(terms);
             else if (!string.IsNullOrEmpty(uf))
-                cidades = _cidadeService.ListByUf(uf);
+                cidadesDto = _cidadeAppService.ListByUf(uf);
             else
-                cidades = _cidadeService.List();
+                cidadesDto = _cidadeAppService.List();
 
-            return Ok(cidades);
+            return Ok(cidadesDto);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(Guid id)
         {
-            var cidades = _cidadeService.Get(id);
-            return Ok(cidades);
+            var cidadeDto = _cidadeAppService.Get(id);
+
+            if (cidadeDto is null)
+                return NotFound();
+            else
+                return Ok(cidadeDto);
         }
     }
 }

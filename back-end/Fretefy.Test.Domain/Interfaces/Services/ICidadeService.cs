@@ -6,7 +6,7 @@ namespace Fretefy.Test.Domain.Interfaces
 {
     public interface ICidadeService
     {
-        Cidade Get(Guid id);
+        Cidade GetByIdAsync(Guid id);
         IEnumerable<Cidade> List();
         IEnumerable<Cidade> ListByUf(string uf);
         IEnumerable<Cidade> Query(string terms);

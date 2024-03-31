@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Fretefy.Test.Domain.Entities
 {
     public class Cidade : IEntity
     {
-        public Cidade()
-        {
-        
-        }
+        public Cidade() { }
 
         public Cidade(string nome, string uf)
         {
@@ -21,5 +20,7 @@ namespace Fretefy.Test.Domain.Entities
         public string Nome { get; set; }
 
         public string UF { get; set; }
+
+        public virtual ICollection<RegiaoCidade> RegioesCidades { get; set; } 
     }
 }

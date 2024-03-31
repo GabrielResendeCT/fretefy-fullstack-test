@@ -1,8 +1,11 @@
 using Fretefy.Test.Domain.Interfaces;
 using Fretefy.Test.Domain.Interfaces.Repositories;
+using Fretefy.Test.Domain.Interfaces.Services;
 using Fretefy.Test.Domain.Services;
 using Fretefy.Test.Infra.EntityFramework;
 using Fretefy.Test.Infra.EntityFramework.Repositories;
+using Fretefy.Test.WebApi.AppServices.Implementations;
+using Fretefy.Test.WebApi.AppServices.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +26,17 @@ namespace Fretefy.Test.WebApi
                 options.UseSqlite("Data Source=Data\\Test.db");
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                {
+                    builder.WithOrigins("http://exemplo.com") // Aqui vai o dominio onde o front esta hospedado.
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials(); // Caso seja necessario cookies ou autenticação via cabeçalhos HTTP.
+                });
+            });
+
             ConfigureInfraService(services);
             ConfigureDomainService(services);
 
@@ -33,11 +47,16 @@ namespace Fretefy.Test.WebApi
         private void ConfigureDomainService(IServiceCollection services)
         {
             services.AddScoped<ICidadeService, CidadeService>();
+            services.AddScoped<ICidadeAppService, CidadeAppService>();
+
+            services.AddScoped<IRegiaoService, RegiaoService>();
+            services.AddScoped<IRegiaoAppService, RegiaoAppService>();
         }
 
         private void ConfigureInfraService(IServiceCollection services)
         {
             services.AddScoped<ICidadeRepository, CidadeRepository>();
+            services.AddScoped<IRegiaoRepository, RegiaoRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -48,6 +67,8 @@ namespace Fretefy.Test.WebApi
             }
 
             app.UseRouting();
+
+            app.UseCors("AllowSpecificOrigin");
 
             app.UseEndpoints(endpoints =>
             {
